@@ -162,10 +162,7 @@ class AlgTest():
           
             print('Semaforo en verde')   
 
-
-                        
-
-
+        #agregando un commit
         if red1==255 and red2==255:
             green1=0 
             green2=0    
