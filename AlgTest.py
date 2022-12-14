@@ -17,8 +17,7 @@ class AlgTest():
         self.first = {}
         self.timeRed1=0
         self.timeRed2=0
-        self.timeGreen1=0
-        self.timeGreen2=0
+        self.photo=[]
 
 
     def processing(self, dict_params, ct, dict_tracking, img, plot_params, update_face_mask_photo_dict, aws_photo_dict, n_boxes):
@@ -79,26 +78,6 @@ class AlgTest():
             dsize2 = (widthRes2, heigthRes2)
             mask2 = cv2.resize(img_processed, dsize2)
             img22 = cv2.resize(img, dsize2)
-        def time_count(time_init, time_end):
-            
-            if time_init==1:
-
-                time_end=0
-                time_red_init=time.time()
-
-
-                if time_end==1:
-                    time_init=0
-                    time_red_end=time.time()
-
-    
-                    time_red=int(time_red_end-time_red_init)
-                    print(time_red)
-                
-                return time_red
-
-
-
         def ColorDetection():
         #Main
             img_frac = img[180:255, 1110:1125]
@@ -132,10 +111,7 @@ class AlgTest():
             min_h_w_ratio = 1.3
             filtered_rects, filtered_rects_centroids, img_processed, GreenColor2 = find_by_color(img_frac2, color_limits_1, color_limits_2, min_h_w_ratio)
            
-
-            
-
-
+           
             if GreenColor1==255 and GreenColor2==255:
 
             # print('Semaforo en Verde')
@@ -162,7 +138,6 @@ class AlgTest():
           
             print('Semaforo en verde')   
 
-        #agregando un commit
         if red1==255 and red2==255:
             green1=0 
             green2=0    
@@ -177,38 +152,46 @@ class AlgTest():
                 for list_id in zone.accumulative_list_id:
                     object_id, class_id, direction, image, time_out, times_in, t_ini, box, speed=list_id.values()
                     
-                    if times_in==2 and direction in zone.filtered_directions:
-
-                        if time_out == 0:
+                    if times_in>0 and times_in<6 and direction in zone.filtered_directions:
                         
                             self.first[object_id]={
                                     'first_photo': img.copy(),
                                     'identity': object_id, 
                                     'class': class_id,
-                                    'time_in': datetime.now()
+                                    'time_in': datetime.now(),
+                                    'frame':times_in
                             }
-                        reference = str(self.first[object_id]['time_in'])
-                        if not os.path.exists(str('local/photo'+'/'+str(reference[0:10]))):
-                            os.makedirs(str('local/photo'+'/'+str(reference[0:10])))
-                    
-                        print(reference)   
 
-                        if time_out==1 and direction in zone.filtered_directions:
+                            #bloque prueba de remove directorio
+                            reference1 = str(self.first[object_id]['identity'])
+                            reference = str(self.first[object_id]['time_in'])
+                            if not os.path.exists(str('local/photo'+'/'+str(reference[0:10])+'/'+str(reference1))):
+                                os.makedirs(str('local/photo'+'/'+str(reference[0:10])+'/'+str(reference1)))
+
+                                cv2.imwrite(os.path.join(str('local/photo'+'/'+str(reference[0:10])+'/'+str(reference1)), str(object_id)+str(times_in)+'primera.jpg'), self.first[object_id]['first_photo'])
+                                print(reference)
+                            
+
+                            if time_out < 1 and direction in zone.filtered_directions:    
+
+                                os.remove('local/photo'+'/'+str(reference[0:10])+'/'+str(reference1))
+                            ##########################################3
+
+                        # if time_out==1 and direction in zone.filtered_directions:
                         
-                            self.infraction[object_id]={
-                                'identity': object_id,
-                                'class': class_id,
-                                'time_out': datetime.now(),
-                                'infracction_photo': img.copy()
-                            }
-                            cv2.imwrite(os.path.join(str('local/photo'+'/'+str(reference[0:10])), str(object_id)+'primera.jpg'), self.first[object_id]['first_photo'])
+                        #     self.infraction[object_id]={
+                        #         'identity': object_id,
+                        #         'class': class_id,
+                        #         'time_out': datetime.now(),
+                        #         'infracction_photo': img.copy()
+                        #     }
+                            #cv2.imwrite(os.path.join(str('local/photo'+'/'+str(reference[0:10])), str(object_id)+str(times_in)+'primera.jpg'), self.first[object_id]['first_photo'])
 
-                            cv2.imwrite(os.path.join(str('local/photo'+'/'+str(reference[0:10])), str(object_id)+'segunda.jpg'),self.infraction[object_id]['infracction_photo'])
+                            #cv2.imwrite(os.path.join(str('local/photo'+'/'+str(reference[0:10])), str(object_id)+'segunda.jpg'),self.infraction[object_id]['infracction_photo'])
             
-                            count=0
+                            
 
-
-                    if times_in>0 and times_in<6  and direction in zone.filtered_directions:
+                    if times_in>0 and times_in<6 and direction in zone.filtered_directions:
                         
                         self.frames[object_id]={
                                 'frames': img.copy(),
