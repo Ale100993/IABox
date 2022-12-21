@@ -18,6 +18,8 @@ class AlgTest():
         self.timeRed1=0
         self.timeRed2=0
         self.photo=[]
+        self.PARAMETROS_SEMAFORO1= []
+        self.PARAMETROS_SEMAFORO2= []
 
 
     def processing(self, dict_params, ct, dict_tracking, img, plot_params, update_face_mask_photo_dict, aws_photo_dict, n_boxes):
@@ -79,48 +81,37 @@ class AlgTest():
             mask2 = cv2.resize(img_processed, dsize2)
             img22 = cv2.resize(img, dsize2)
         def ColorDetection():
-        #Main
-            img_frac = img[180:255, 1110:1125]
 
-            img_frac2 = img[395:465, 1510:1535]
+            #semaforo1 = img[180:255, 1110:1125]
+            self.PARAMETROS_SEMAFORO1 = img[180:255, 1110:1125]
 
-
+            self.PARAMETROS_SEMAFORO2 = img[395:465, 1510:1535]
+       
 
             #Semaforo Rojo1
             color_limits_1 = [[0, 150, 60], [10, 255, 255]] #Mascara Color Rojo
             color_limits_2 = [[170,150, 60], [180, 255, 255]]
             min_h_w_ratio = 1.3
-            filtered_rects, filtered_rects_centroids, img_processed, RedColor1 = find_by_color(img_frac, color_limits_1, color_limits_2, min_h_w_ratio)
+            filtered_rects, filtered_rects_centroids, img_processed, RedColor1 = find_by_color(self.PARAMETROS_SEMAFORO1, color_limits_1, color_limits_2, min_h_w_ratio)
 
             #Semaforo Rojo2
             color_limits_1 = [[0, 150, 60], [10, 255, 255]] #Mascara Color Rojo
             color_limits_2 = [[170,150, 60], [180, 255, 255]]
             min_h_w_ratio = 1.3
-            filtered_rects, filtered_rects_centroids, img_processed, RedColor2 = find_by_color(img_frac2, color_limits_1, color_limits_2, min_h_w_ratio)  
+            filtered_rects, filtered_rects_centroids, img_processed, RedColor2 = find_by_color(self.PARAMETROS_SEMAFORO2, color_limits_1, color_limits_2, min_h_w_ratio)  
 
             #Semaforo Verde1
             color_limits_1 = [[36, 50, 70], [89, 255, 255]] #Mascara Color Verde
             color_limits_2 = [[255,0,0], [180, 255, 255]]
             min_h_w_ratio = 1.3
-            filtered_rects, filtered_rects_centroids, img_processed, GreenColor1 = find_by_color(img_frac, color_limits_1, color_limits_2, min_h_w_ratio)
+            filtered_rects, filtered_rects_centroids, img_processed, GreenColor1 = find_by_color(self.PARAMETROS_SEMAFORO1, color_limits_1, color_limits_2, min_h_w_ratio)
         
 
             #Semaforo Verde2
             color_limits_1 = [[36, 50, 70], [89, 255, 255]] #Mascara Color Verde
             color_limits_2 = [[255,0,0], [180, 255, 255]]
             min_h_w_ratio = 1.3
-            filtered_rects, filtered_rects_centroids, img_processed, GreenColor2 = find_by_color(img_frac2, color_limits_1, color_limits_2, min_h_w_ratio)
-           
-           
-            if GreenColor1==255 and GreenColor2==255:
-
-            # print('Semaforo en Verde')
-                image_show(img, img_processed, filtered_rects)
-
-            elif RedColor1==255 and RedColor2==255:
-
-                #print('Semaforo en rojo')
-                image_show(img, img_processed, filtered_rects)
+            filtered_rects, filtered_rects_centroids, img_processed, GreenColor2 = find_by_color(self.PARAMETROS_SEMAFORO2, color_limits_1, color_limits_2, min_h_w_ratio)
             
             return GreenColor1, RedColor1, GreenColor2, RedColor2
         
@@ -162,21 +153,7 @@ class AlgTest():
                                     'frame':times_in
                             }
 
-                            #bloque prueba de remove directorio
-                            reference1 = str(self.first[object_id]['identity'])
-                            reference = str(self.first[object_id]['time_in'])
-                            if not os.path.exists(str('local/photo'+'/'+str(reference[0:10])+'/'+str(reference1))):
-                                os.makedirs(str('local/photo'+'/'+str(reference[0:10])+'/'+str(reference1)))
-
-                                cv2.imwrite(os.path.join(str('local/photo'+'/'+str(reference[0:10])+'/'+str(reference1)), str(object_id)+str(times_in)+'primera.jpg'), self.first[object_id]['first_photo'])
-                                print(reference)
                             
-
-                            if time_out < 1 and direction in zone.filtered_directions:    
-
-                                os.remove('local/photo'+'/'+str(reference[0:10])+'/'+str(reference1))
-                            ##########################################3
-
                         # if time_out==1 and direction in zone.filtered_directions:
                         
                         #     self.infraction[object_id]={
@@ -242,15 +219,7 @@ class AlgTest():
     #             print('times_in: ', times_in)
     #             print('class_id: ', class_id)
     #             print('time_out: ', time_out)
-    #             #print('box: ', box)
-
-
-    #             if times_in>1 & time_out>2 :
-     #                   print('Cruce en verde')  
-      #                  print('times_in: ', times_in)
-#                        print('class_id: ', class_id)
-            
-        
+    #             #print('box: ', box)       
 
         
     pass
